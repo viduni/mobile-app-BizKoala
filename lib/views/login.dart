@@ -1,5 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:link/link.dart';
+import 'package:flutter/gestures.dart';
+import 'package:provider/provider.dart';
+
+import 'package:mobile_app/providers/auth.dart';
+import 'package:mobile_app/utils/validate.dart';
+import 'package:mobile_app/styles/styles.dart';
+import 'package:mobile_app/widgets/notification_text.dart';
+import 'package:mobile_app/widgets/styled_flat_button.dart';
+
 
 class Login extends StatefulWidget {
   @override
@@ -62,4 +71,52 @@ class Choice {
   String link;
 
   Choice({this.title, this.link});
+}
+
+class LogInForm extends StatefulWidget {
+  const LogInForm({Key key}) : super(key: key);
+
+  @override
+  _LogInFormState createState() => _LogInFormState();
+}
+
+class _LogInFormState extends State<LogInForm> {
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  String email;
+  String password;
+  String message = '';
+
+  Future<void> submit() async {
+    final form = _formKey.currentState;
+    if(form.validate()){
+      await Provider.of<AuthProvider>(context).login(email, password);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Form(
+      key: _formKey,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          RaisedButton(
+            onPressed: null,
+            child: Text(
+              'Login',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 20)
+            ),
+          ),
+          SizedBox(height: 10.0),
+          Consumer<AuthProvider>(
+            builder: (context, provider, child) => provider.notification ?? NotificationText(''),
+          ),
+          
+        ],
+      ),
+    );
+  }
 }
